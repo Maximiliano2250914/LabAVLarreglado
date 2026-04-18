@@ -1,5 +1,6 @@
 #Maximiliano David
 import sys
+from bigtree import Node as BTNode, Tree
 
 class Node:
     def __init__(self, value):
@@ -89,9 +90,9 @@ class AVLTree:
         if not node:
             return node
         if value < node.value:
-            node.left = self._eliminar_recursivo(node.left, value)
+            node.left = self._delete_recursivo(node.left, value)
         elif value > node.value:
-            node.right = self._eliminar_recursivo(node.right, value)
+            node.right = self._delete_recursivo(node.right, value)
         else:
             if not node.left:
                 return node.right
@@ -100,7 +101,7 @@ class AVLTree:
             else:
                 siguiente = self._min_value_node(node.right)
                 node.value = siguiente.value
-                node.right = self._eliminar_recursivo(node.right, siguiente.value)
+                node.right = self._delete_recursivo(node.right, siguiente.value)
 
         if not node:
             return node
@@ -138,6 +139,20 @@ class AVLTree:
             result.append(node.value)
             self._inorder_recursive(node.right, result)
 
+    def display(self):
+        def build(avl_node, parent=None):
+            if not avl_node:
+                return None
+            label = f"{avl_node.value} (b={getBalance(avl_node)})"
+            bt_node = BTNode(label, parent=parent)
+            build(avl_node.left, bt_node)
+            build(avl_node.right, bt_node)
+            return bt_node
+
+        root_bt = build(self.root)
+        if root_bt:
+            Tree(root_bt).show()
+
 avl = AVLTree()
 values_to_insert = [10, 20, 30, 40, 50, 25]
 
@@ -146,3 +161,15 @@ for val in values_to_insert:
     avl.insert(val)
 
 print("\n--- Después de inserciones ---")
+avl.display()
+print("In-order:", avl.inorder())
+
+print("\n--- Eliminando 40 ---")
+avl.delete(40)
+avl.display()
+print("In-order:", avl.inorder())
+
+print("\n--- Eliminando 10 ---")
+avl.delete(10)
+avl.display()
+print("In-order:", avl.inorder())
