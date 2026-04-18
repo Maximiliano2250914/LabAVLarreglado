@@ -82,6 +82,62 @@ class AVLTree:
        
         return node
   
+    def delete(self, value):
+        self.root = self._delete_recursivo(self.root, value)
+
+    def _delete_recursivo(self, node, value):
+        if not node:
+            return node
+        if value < node.value:
+            node.left = self._eliminar_recursivo(node.left, value)
+        elif value > node.value:
+            node.right = self._eliminar_recursivo(node.right, value)
+        else:
+            if not node.left:
+                return node.right
+            elif not node.right:
+                return node.left
+            else:
+                siguiente = self._min_value_node(node.right)
+                node.value = siguiente.value
+                node.right = self._eliminar_recursivo(node.right, siguiente.value)
+
+        if not node:
+            return node
+
+        updateHeight(node)
+        equilibrio = getBalance(node)
+
+        if equilibrio > 1 and getBalance(node.left) >= 0:
+            return rotate_right(node)
+        if equilibrio > 1 and getBalance(node.left) < 0:
+            node.left = rotate_left(node.left)
+            return rotate_right(node)
+        if equilibrio < -1 and getBalance(node.right) <= 0:
+            return rotate_left(node)
+        if equilibrio < -1 and getBalance(node.right) > 0:
+            node.right = rotate_right(node.right)
+            return rotate_left(node)
+
+        return node
+    
+    def _min_value_node(self, node):                          
+        current = node
+        while current.left:
+            current = current.left
+        return current
+
+    def inorder(self):                                       
+        result = []
+        self._inorder_recursive(self.root, result)
+        return result
+
+    def _inorder_recursive(self, node, result):
+        if node:
+            self._inorder_recursive(node.left, result)
+            result.append(node.value)
+            self._inorder_recursive(node.right, result)
+
 avl = AVLTree()
 values_to_insert = [10, 20, 30, 40, 50, 25]
 
